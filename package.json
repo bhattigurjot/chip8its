@@ -1,0 +1,22 @@
+{
+  "name": "chippy8",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bhattigurjot/chippy8.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bhattigurjot/chippy8/issues"
+  },
+  "homepage": "https://github.com/bhattigurjot/chippy8#readme",
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4"
+  }
+}
