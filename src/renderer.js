@@ -5,19 +5,28 @@ class Renderer {
 
         this.width = 100;
         this.height = 100;
-        this.resize_canvas(this.width, this.height);
+        this.pixelSize = 10;
+        this.resizeCanvas(this.width, this.height);
 
-        this.clear_screen();
+        this.clearScreen();
+
+        // Test drawing pixel
+        this.drawPixel(10,10);
     }
 
-    resize_canvas(width, height) {
+    resizeCanvas(width, height) {
         this.canvas.width = width;
         this.canvas.height = height;
     }
 
-    clear_screen() {
+    clearScreen() {
         this.context.fillStyle = 'rgb(0,0,0)';
         this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    drawPixel(x, y) {
+        this.context.fillStyle = 'rgb(255,255,255)';
+        this.context.fillRect(x, y, this.pixelSize, this.pixelSize);
     }
 }
 
