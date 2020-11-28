@@ -1,7 +1,15 @@
 import Chippy8 from "./chippy8";
 
-const canvas = document.getElementById("canvas");
+/**
+ * Variables and constants
+ */
 let chippy8;
+let romFileData = undefined;
+let fps = 60;
+
+const canvas = document.getElementById("canvas");
+const fileToRead = document.getElementById("romFile");
+const reloadButton = document.getElementById("reload");
 
 if (canvas.getContext) {
     console.log("Welcome to Chip 8 Emulator");
@@ -10,14 +18,12 @@ if (canvas.getContext) {
     console.log("Canvas not supported. Try different browser.");
 }
 
-const fileToRead = document.getElementById("romFile");
 fileToRead.addEventListener("change", handleFileUpload);
-
-const reloadButton = document.getElementById("reload");
 reloadButton.addEventListener("click", reloadRom);
 
-let romFileData = undefined;
-
+/**
+ * Functions
+ */
 function handleFileUpload() {
     let x = document.getElementById("romFile").files[0];
     
@@ -33,4 +39,33 @@ function handleFileUpload() {
 
 function reloadRom() {
     chippy8.uploadRomToMemory(romFileData);
+    animate();
+}
+
+function animate() {
+    setTimeout(() => {       
+        requestAnimationFrame(animate);
+        draw();
+    }, 1000/fps);
+}
+
+// var framerate = 1000 / fps;
+// function animate() {
+//     draw();
+
+//     let delta = Date.now();
+//     let deltaTime = Date.now() - delta;
+//     if (deltaTime >= framerate) {
+//         requestAnimationFrame(animate);
+//     }
+//     else {
+//         setTimeout(() => {
+//             requestAnimationFrame(animate);
+//         }, framerate - deltaTime);
+//     }
+// }
+var i = 0;
+function draw() {
+    chippy8.renderer.clearScreen();
+    chippy8.renderer.drawPixel(i++, i++);
 }

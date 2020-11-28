@@ -1,8 +1,44 @@
-import Renderer from "./renderer";
+import IO from "./io";
 
 class Chippy8 {
     constructor(canvas) {
-        this.renderer = new Renderer(canvas);
+        this.numCols = 64;
+        this.numRows = 32;
+        this.scale = 10;
+        this.renderer = new IO(canvas, this.numRows, this.numCols, this.scale);
+        this.display = Array[this.numCols*this.numRows];
+        this.memory = new Uint8Array(4096);
+        this.pc = 0;
+        this.i = 0;
+        this.stack = [];
+        this.delayTimer = 0;
+        this.soundTimer = 0;
+        this.v = new Uint8Array(16);
+        this.fonts = [
+            0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
+            0x20, 0x60, 0x20, 0x20, 0x70, // 1
+            0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
+            0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
+            0x90, 0x90, 0xF0, 0x10, 0x10, // 4
+            0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
+            0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
+            0xF0, 0x10, 0x20, 0x40, 0x40, // 7
+            0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
+            0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
+            0xF0, 0x90, 0xF0, 0x90, 0x90, // A
+            0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
+            0xF0, 0x80, 0x80, 0x80, 0xF0, // C
+            0xE0, 0x90, 0x90, 0x90, 0xE0, // D
+            0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
+            0xF0, 0x80, 0xF0, 0x80, 0x80  // F
+        ];
+    }
+
+    uploadRomToMemory = (rom) => {
+        for (let i = 0; i < rom.length; i++) {
+            this.memory[0x200 + i] = rom[i];            
+        }
+        console.log("Rom uploaded to memory");
     }
 }
 
