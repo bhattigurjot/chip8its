@@ -3,6 +3,8 @@ class IO {
         // Display
         this.canvas = canvas;
         this.displayContext = canvas.getContext('2d');
+        this.backgroundColor = 'rgb(0,0,0)';
+        this.pixelColor = 'rgb(255,255,255)';
 
         this.cols = cols;
         this.rows = rows;
@@ -47,19 +49,17 @@ class IO {
         this.oscillator = null;
     }
 
+    /** 
+     * Display
+    */
     resizeCanvas = (width, height) => {
         this.canvas.width = width;
         this.canvas.height = height;
     }
 
     clearScreen = () => {
-        this.displayContext.fillStyle = 'rgb(0,0,0)';
+        this.displayContext.fillStyle = this.backgroundColor;
         this.displayContext.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    }
-
-    drawPixel = (x, y) => {
-        this.displayContext.fillStyle = 'rgb(255,255,255)';
-        this.displayContext.fillRect(x, y, this.pixelSize, this.pixelSize);
     }
 
     togglePixelAndReturn = (x,y) => {
@@ -70,6 +70,25 @@ class IO {
         return this.display[index];
     }
 
+    drawPixel = (x, y) => {
+        this.displayContext.fillStyle = pixelColor;
+        this.displayContext.fillRect(x, y, this.pixelSize, this.pixelSize);
+    }
+
+    draw = () => {
+        this.clearScreen();
+
+        for (let i = 0; i < this.display.length; i++) {
+            // https://softwareengineering.stackexchange.com/a/212813
+            let x = i % this.width;
+            let y = i / this.width;
+            this.drawPixel(x,y);
+        }
+    }
+
+    /** 
+     * Keyboard
+    */
     keyDownHandler = (event) => {
         this.keysCurrentlyPressed[this.keypadMap[event.keyCode]] = true;
     }
@@ -78,6 +97,9 @@ class IO {
         this.keysCurrentlyPressed[this.keypadMap[event.keyCode]] = false;
     }
 
+    /** 
+     * Audio
+    */
     createOscillator = () => {
         this.oscillator = this.audioContext.createOscillator();
         this.oscillator.type = 'sine';
@@ -98,18 +120,6 @@ class IO {
                 this.oscillator.disconnect();
                 this.oscillator = null;
             }
-        }
-    }
-
-    draw = () => {
-        this.clearScreen();
-
-        this.displayContext.fillStyle = 'rgb(255,255,255)';
-        for (let i = 0; i < this.display.length; i++) {
-            // https://softwareengineering.stackexchange.com/a/212813
-            let x = i % this.width;
-            let y = i / this.width;
-            this.displayContext.fillRect(x, y, this.pixelSize, this.pixelSize);
         }
     }
 }
