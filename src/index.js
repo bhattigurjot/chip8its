@@ -13,6 +13,9 @@ if (canvas.getContext) {
 const fileToRead = document.getElementById("romFile");
 fileToRead.addEventListener("change", handleFileUpload);
 
+const reloadButton = document.getElementById("reload");
+reloadButton.addEventListener("click", reloadRom);
+
 let romFileData = undefined;
 
 function handleFileUpload() {
@@ -23,5 +26,11 @@ function handleFileUpload() {
     fileReader.onload = (event) => {
         romFileData = event.target.result;
         console.log(romFileData);
+        
+        chippy8.uploadRomToMemory(romFileData);
     };
+}
+
+function reloadRom() {
+    chippy8.uploadRomToMemory(romFileData);
 }
