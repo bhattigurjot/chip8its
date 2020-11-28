@@ -29,17 +29,30 @@ function handleFileUpload() {
     
     let fileReader = new FileReader();
     fileReader.readAsArrayBuffer(x);
-    fileReader.onload = (event) => {
+    fileReader.onloadend = (event) => {
         romFileData = event.target.result;
-        console.log(romFileData);
+        console.log(romFileData.byteLength);
         
-        chippy8.uploadRomToMemory(romFileData);
+        loadRom(romFileData);
     };
 }
 
-function reloadRom() {
-    chippy8.uploadRomToMemory(romFileData);
+function loadRom(rom) {
+    window.cancelAnimationFrame(animate);
+
+    chippy8 = new Chippy8(canvas);
+    chippy8.uploadRomToMemory(rom);
+
     animate();
+}
+
+function reloadRom() {
+    if (romFileData) {
+        loadRom(romFileData);
+    }
+    else {
+        alert("No rom uploaded!");
+    }
 }
 
 function animate() {
@@ -48,19 +61,3 @@ function animate() {
         chippy8.emulatorLoop();
     }, 1000/fps);
 }
-
-// var framerate = 1000 / fps;
-// function animate() {
-//     draw();
-
-//     let delta = Date.now();
-//     let deltaTime = Date.now() - delta;
-//     if (deltaTime >= framerate) {
-//         requestAnimationFrame(animate);
-//     }
-//     else {
-//         setTimeout(() => {
-//             requestAnimationFrame(animate);
-//         }, framerate - deltaTime);
-//     }
-// }

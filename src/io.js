@@ -13,10 +13,11 @@ class IO {
         this.width = this.cols * this.scale;
         this.height = this.rows * this.scale;
         this.pixelSize = 1 * this.scale;
-        this.display = Array[cols*rows];
+        this.display = null;
+        this.clearDisplay();
 
         this.resizeCanvas(this.width, this.height);
-        this.clearScreen();
+        this.clearBackground();
 
         // Keyboard - needs binding otherwise cannot access keypad mappings
         window.addEventListener('keydown', this.keyDownHandler.bind(this), false);
@@ -57,32 +58,54 @@ class IO {
         this.canvas.height = height;
     }
 
-    clearScreen = () => {
+    clearBackground = () => {
         this.displayContext.fillStyle = this.backgroundColor;
         this.displayContext.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
-    togglePixelAndReturn = (x,y) => {
-        let index = x + (y * this.cols);
-        // Toggle pixel using XOR
-        this.display[index] ^= 1;
+    clearDisplay = () => {
+        this.display = new Array(this.cols * this.rows);
+        for(let i = 0; i < this.cols*this.rows; i++)
+            this.display[i] = 0;
+    }
 
+    getPixel = (x,y) => {
+        let index = x + (y * this.cols);
         return this.display[index];
     }
 
+    setPixel = (x,y,val) => {
+        // Wrap x and y 
+        if(x > this.cols)
+            x -= this.cols;
+        else if(x < 0)
+            x += this.cols;
+
+        if(y > this.rows)
+            y -= this.rows;
+        else if(y<0)
+            y += this.rows;
+
+        let index = x + (y * this.cols);
+        this.display[index] = val;
+    }
+
     drawPixel = (x, y) => {
-        this.displayContext.fillStyle = pixelColor;
+        this.displayContext.fillStyle = this.pixelColor;
         this.displayContext.fillRect(x, y, this.pixelSize, this.pixelSize);
     }
 
     draw = () => {
-        this.clearScreen();
+        this.clearBackground();
 
-        for (let i = 0; i < this.display.length; i++) {
+        for (let i = 0; i < this.cols*this.rows; i++) {
             // https://softwareengineering.stackexchange.com/a/212813
-            let x = i % this.width;
-            let y = i / this.width;
-            this.drawPixel(x,y);
+            let x = (i % this.cols) * this.scale;
+            let y = Math.floor(i / this.cols) * this.scale;
+
+            if (this.display[i] == 1) {
+                this.drawPixel(x,y);
+            }
         }
     }
 
