@@ -9,3 +9,19 @@ if (canvas.getContext) {
 } else {
     console.log("Canvas not supported. Try different browser.");
 }
+
+const fileToRead = document.getElementById("romFile");
+fileToRead.addEventListener("change", handleFileUpload);
+
+let romFileData = undefined;
+
+function handleFileUpload() {
+    let x = document.getElementById("romFile").files[0];
+    
+    let fileReader = new FileReader();
+    fileReader.readAsArrayBuffer(x);
+    fileReader.onload = (event) => {
+        romFileData = event.target.result;
+        console.log(romFileData);
+    };
+}
