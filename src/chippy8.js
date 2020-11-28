@@ -49,7 +49,9 @@ class Chippy8 {
 
     emulatorLoop = () => {
         for (let iteration = 0; iteration < 10; iteration++) {
+            // FETCH
             let oc = this.memory[this.pc] << 8 | this.memory[this.pc + 1];
+            // DECODE AND EXECUTE
             this.decode(oc);
         }
 
@@ -76,10 +78,33 @@ class Chippy8 {
                     case 0x00E0: // 00E0 - CLS
                         this.io.clearDisplay();
                         break;
+                    case 0x00EE: // 00EE - RET
+                        this.pc = this.stack.pop();
+                        // this.stackpointer -= 1
+                        break;
                 }
                 break;
             case 0x1000: // 1NNN - JP addr
                 this.pc = (oc & 0xFFF);
+                break;
+            case 0x2000: // 2NNN - CALL addr
+                this.stack.push(this.pc);
+                this.pc = (oc & 0xFFF);
+                break;
+            case 0x3000: // 3XNN - SE Vx, byte
+                if (this.v[x] == (oc & 0xFF)) {
+                    this.pc += 2;
+                } 
+                break;
+            case 0x4000: // 4XNN - SNE Vx, byte
+                if (this.v[x] != (oc & 0xFF)) {
+                    this.pc += 2;
+                }
+                break;
+            case 0x5000: // 5XNN - SE Vx, Vy
+                if (this.v[x] == this.v[y]) {
+                    this.pc += 2;
+                }
                 break;
             case 0x6000: // 6XNN - LD Vx, byte
                 this.v[x] = (oc & 0xFF); 
@@ -87,8 +112,76 @@ class Chippy8 {
             case 0x7000: // 7XNN - ADD Vx, byte
                 this.v[x] += (oc & 0xFF); 
                 break;
+            // ALU
+            case 0x8000: 
+                switch (oc & 0x000F) {
+                    case 0x0: // 8XY0 - LD Vx, Vy
+                        this.v[x] = this.v[y];
+                        break;
+                    case 0x1: // 8XY1 - OR Vx, Vy
+                        this.v[x] = this.v[x] | this.v[y];
+                        break;
+                    case 0x2: // 8XY2 - AND Vx, Vy
+                        this.v[x] = this.v[x] & this.v[y];
+                        break;
+                    case 0x3: // 8XY3 - XOR Vx, Vy
+                        this.v[x] = this.v[x] ^ this.v[y];
+                        break;
+                    case 0x4: // 8XY4 - ADD Vx, Vy
+                        let res = this.v[x] + this.v[y];
+                        if (res > 255)
+                            this.v[0xF] = 1;
+                        else
+                            this.v[0xF] = 0;
+
+                        this.v[x] = (res & 0xFF);
+                        break;
+                    case 0x5: // 8XY5 - SUB Vx, Vy
+                        if (this.v[x] > this.v[y])
+                            this.v[0xF] = 1;
+                        else
+                            this.v[0xF] = 0;
+
+                        this.v[x] -= this.v[y];
+                        break;
+                    case 0x6: // 8XY6 - SHR Vx {, Vy}
+                        if ((this.v[x] & 0x1) == 1)
+                            this.v[0xF] = 1;
+                        else 
+                            this.v[0xF] = 0;
+
+                        this.v[x] /= 2;
+                        break;
+                    case 0x7: // 8XY7 - SUBN Vx, Vy
+                        if (this.v[y] > this.v[x])
+                            this.v[0xF] = 1;
+                        else
+                            this.v[0xF] = 0;
+
+                        this.v[x] = this.v[y] - this.v[x];
+                        break;
+                    case 0xE: // 8XYE - SHL Vx {, Vy}
+                        if ((this.v[x] >> 0xF) == 1)
+                            this.v[0xF] = 1;
+                        else
+                            this.v[0xF] = 0;
+
+                        this.v[x] *= 2;
+                        break;
+                    default:
+                        console.error("Wrong opcode for ALU: " + oc);
+                        break;
+                }
+                break;
             case 0xA000: // ANNN - LD I, addr
                 this.i = (oc & 0xFFF);
+                break;
+            case 0xB000: // BNNN - JP V0, addr
+                this.pc = this.v[0x0] + (oc & 0xFFF);
+                break;
+            case 0xC000: // CXNN - RND Vx, byte
+                let random = Math.floor(Math.random() * 255);
+                this.v[x] = random & (oc & 0xFF);
                 break;
             case 0xD000: // DXYN - DRW Vx, Vy, nibble
                 let xCoord = this.v[x];
@@ -133,6 +226,61 @@ class Chippy8 {
                     }
                 }
                 break;
+                case 0xE000:
+                    switch (oc & 0xFF) {
+                        case 0x9E: // EX9E - SKP Vx
+                            // key pressed
+                            if (this.io.keysCurrentlyPressed[this.v[x]])
+                                this.pc += 2;
+                            break;
+                        case 0xA1: // EXA1 - SKNP Vx
+                            // key not pressed
+                            if (!this.io.keysCurrentlyPressed[this.v[x]])
+                                this.pc += 2;
+                            break;
+                    }
+                    break;
+                case 0xF000: 
+                    switch (oc & 0xFF) {
+                        case 0x07: // FX07 - LD Vx, DT
+                            this.v[x] = this.delayTimer;
+                            break;
+                        case 0x0A: // FX0A - LD Vx, K
+                            // Keyboard
+                            break;
+                        case 0x15: // FX15 - LD DT, Vx
+                            this.delayTimer = this.v[x];
+                            break;
+                        case 0x18: // FX18 - LD ST, Vx
+                            this.soundTimer = this.v[x];
+                            break;
+                        case 0x1E: // FX1E - ADD I, Vx
+                            this.i = this.i + this.v[x];
+                            break;
+                        case 0x29: // FX29 - LD F, Vx
+                            // All fonts are stored oin first 80 bytes of memory
+                            this.i = this.v[x] * 5; 
+                            break;
+                        case 0x33: // FX33 - LD B, Vx
+                            this.memory[this.i] = Math.floor(this.v[x]/100);
+                            this.memory[this.i+1] = Math.floor((this.v[x]%100)/10);
+                            this.memory[this.i+2] = Math.floor(this.v[x]/10);
+                            break;
+                        case 0x55: // FX55 - LD [I], Vx
+                            for (let index = 0; index < x; index++) {
+                                this.memory[this.i + index] = this.v[index];
+                            }
+                            this.i = this.i + x + 1;
+                        case 0x65: // FX65 - LD Vx, [I]
+                            for (let index = 0; index < x; index++) {
+                                this.v[this.i + index] = this.memory[index]; 
+                            }
+                            this.i = this.i + x + 1;
+                        default:
+                            console.error("Wrong opcode for 0x8000: " + oc);
+                            break;
+                    }
+                    break;
             default:
                 console.error("Wrong opcode: " + oc);
                 break;
