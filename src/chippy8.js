@@ -2,11 +2,8 @@ import IO from "./io";
 
 class Chippy8 {
     constructor(canvas) {
-        this.numCols = 64;
-        this.numRows = 32;
-        this.scale = 10;
-        this.renderer = new IO(canvas, this.numRows, this.numCols, this.scale);
-        this.display = Array[this.numCols*this.numRows];
+        this.renderer = new IO(canvas, 64, 32, 10);
+        
         this.memory = new Uint8Array(4096);
         this.pc = 0;
         this.i = 0;
@@ -40,6 +37,11 @@ class Chippy8 {
         }
         console.log("Rom uploaded to memory");
     }
+
+    emulatorLoop = () => {
+        this.renderer.draw();
+    }
+
 }
 
 export default Chippy8;

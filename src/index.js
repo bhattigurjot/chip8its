@@ -45,7 +45,7 @@ function reloadRom() {
 function animate() {
     setTimeout(() => {       
         requestAnimationFrame(animate);
-        draw();
+        chippy8.emulatorLoop();
     }, 1000/fps);
 }
 
@@ -64,8 +64,3 @@ function animate() {
 //         }, framerate - deltaTime);
 //     }
 // }
-var i = 0;
-function draw() {
-    chippy8.renderer.clearScreen();
-    chippy8.renderer.drawPixel(i++, i++);
-}

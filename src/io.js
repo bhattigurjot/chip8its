@@ -1,13 +1,17 @@
 class IO {
-    constructor(canvas, rows, cols, scale) {
+    constructor(canvas, cols, rows, scale) {
         // Display
         this.canvas = canvas;
         this.displayContext = canvas.getContext('2d');
 
+        this.cols = cols;
+        this.rows = rows;
         this.scale = scale;
-        this.width = cols * this.scale;
-        this.height = rows * this.scale;
+
+        this.width = this.cols * this.scale;
+        this.height = this.rows * this.scale;
         this.pixelSize = 1 * this.scale;
+        this.display = Array[cols*rows];
 
         this.resizeCanvas(this.width, this.height);
         this.clearScreen();
@@ -58,6 +62,14 @@ class IO {
         this.displayContext.fillRect(x, y, this.pixelSize, this.pixelSize);
     }
 
+    togglePixelAndReturn = (x,y) => {
+        let index = x + (y * this.cols);
+        // Toggle pixel using XOR
+        this.display[index] ^= 1;
+
+        return this.display[index];
+    }
+
     keyDownHandler = (event) => {
         this.keysCurrentlyPressed[this.keypadMap[event.keyCode]] = true;
     }
@@ -86,6 +98,18 @@ class IO {
                 this.oscillator.disconnect();
                 this.oscillator = null;
             }
+        }
+    }
+
+    draw = () => {
+        this.clearScreen();
+
+        this.displayContext.fillStyle = 'rgb(255,255,255)';
+        for (let i = 0; i < this.display.length; i++) {
+            // https://softwareengineering.stackexchange.com/a/212813
+            let x = i % this.width;
+            let y = i / this.width;
+            this.displayContext.fillRect(x, y, this.pixelSize, this.pixelSize);
         }
     }
 }
