@@ -3,9 +3,10 @@ class Renderer {
         this.canvas = canvas;
         this.context = canvas.getContext('2d');
 
-        this.width = 100;
-        this.height = 100;
-        this.pixelSize = 10;
+        this.scale = 10;
+        this.width = 64 * this.scale;
+        this.height = 32 * this.scale;
+        this.pixelSize = 1 * this.scale;
         this.resizeCanvas(this.width, this.height);
 
         this.clearScreen();
