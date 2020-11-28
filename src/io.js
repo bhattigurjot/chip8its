@@ -44,6 +44,7 @@ class IO {
             86: 0xF  // v:F
         };
         this.keysCurrentlyPressed = [];
+        this.keyPressDetector = null;
 
         // Audio
         this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -114,6 +115,13 @@ class IO {
     */
     keyDownHandler = (event) => {
         this.keysCurrentlyPressed[this.keypadMap[event.keyCode]] = true;
+
+        // Make sure the keypress is not null
+        if (this.keyPressDetector) {
+            this.keyPressDetector(this.keypadMap[event.keyCode]);
+            // Make it null for the next time
+            this.keyPressDetector = null;
+        }
     }
     
     keyUpHandler = (event) => {

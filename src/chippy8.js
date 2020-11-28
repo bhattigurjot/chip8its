@@ -11,6 +11,7 @@ class Chippy8 {
         this.delayTimer = 0;
         this.soundTimer = 0;
         this.v = new Uint8Array(16);
+        this.isExecuting = true;
         this.fonts = [
             0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
             0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -48,13 +49,27 @@ class Chippy8 {
     }
 
     emulatorLoop = () => {
+        // Instructions
         for (let iteration = 0; iteration < 10; iteration++) {
-            // FETCH
-            let oc = this.memory[this.pc] << 8 | this.memory[this.pc + 1];
-            // DECODE AND EXECUTE
-            this.decode(oc);
+            if (this.isExecuting) {
+                // FETCH
+                let oc = this.memory[this.pc] << 8 | this.memory[this.pc + 1];
+                // DECODE AND EXECUTE
+                this.decode(oc);
+            }
         }
 
+        // Updates
+        if (this.isExecuting) {
+            if(this.delayTimer > 0) this.delayTimer--;
+            if(this.soundTimer > 0) this.soundTimer--;
+        }
+
+        // Sound Play
+        if (this.soundTimer > 0) this.io.playAudio(true);
+        else this.io.playAudio(false);
+
+        // Draw Game
         this.io.draw();
     }
 
@@ -114,7 +129,7 @@ class Chippy8 {
                 break;
             // ALU
             case 0x8000: 
-                switch (oc & 0x000F) {
+                switch (oc & 0xF) {
                     case 0x0: // 8XY0 - LD Vx, Vy
                         this.v[x] = this.v[y];
                         break;
@@ -247,6 +262,14 @@ class Chippy8 {
                             break;
                         case 0x0A: // FX0A - LD Vx, K
                             // Keyboard
+                            this.isExecuting = false;
+                            // Need to create a callback to get the key pressed
+                            let keyPressCallback = (pressedKey) => {
+                                this.v[x] = pressedKey;
+                                this.isExecuting = true;
+                            }
+                            // Attach callback to get the value back
+                            this.io.keyPressDetector = keyPressCallback.bind(this);
                             break;
                         case 0x15: // FX15 - LD DT, Vx
                             this.delayTimer = this.v[x];
@@ -264,20 +287,22 @@ class Chippy8 {
                         case 0x33: // FX33 - LD B, Vx
                             this.memory[this.i] = Math.floor(this.v[x]/100);
                             this.memory[this.i+1] = Math.floor((this.v[x]%100)/10);
-                            this.memory[this.i+2] = Math.floor(this.v[x]/10);
+                            this.memory[this.i+2] = Math.floor(this.v[x]%10);
                             break;
                         case 0x55: // FX55 - LD [I], Vx
-                            for (let index = 0; index < x; index++) {
+                            for (let index = 0; index <= x; index++) {
                                 this.memory[this.i + index] = this.v[index];
                             }
-                            this.i = this.i + x + 1;
+                            // this.i = this.i + x + 1;
+                            break;
                         case 0x65: // FX65 - LD Vx, [I]
-                            for (let index = 0; index < x; index++) {
-                                this.v[this.i + index] = this.memory[index]; 
+                            for (let index = 0; index <= x; index++) {
+                                this.v[index] = this.memory[this.i + index]; 
                             }
-                            this.i = this.i + x + 1;
+                            // this.i = this.i + x + 1;
+                            break;
                         default:
-                            console.error("Wrong opcode for 0x8000: " + oc);
+                            console.error("Wrong opcode for 0xF000: " + oc);
                             break;
                     }
                     break;
