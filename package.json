@@ -9,7 +9,7 @@
     "build-dev": "parcel build ./src/index.html --no-minify --public-url ./",
     "prebuild": "shx rm -rf dist/*",
     "build": "parcel build ./src/index.html --public-url ./",
-    "predeploy": "shx rm -rf dist && parcel build ./src/index.html --public-url ./chip8its",
+    "predeploy": "shx rm -rf dist && parcel build ./src/index.html --public-url ./",
     "deploy": "gh-pages -d dist"
   },
   "repository": {
