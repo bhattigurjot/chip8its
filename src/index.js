@@ -9,7 +9,10 @@ let fps = 60;
 
 const canvas = document.getElementById("canvas");
 const fileToRead = document.getElementById("romFile");
-const reloadButton = document.getElementById("reload");
+const reloadButton = document.getElementById("start");
+// const selectOption = document.getElementById("romsOptions");
+// const image = document.getElementById("image");
+// const keypad = document.getElementById("keypad");
 
 if (canvas.getContext) {
     console.log("Welcome to Chip 8 Emulator");
@@ -20,6 +23,18 @@ if (canvas.getContext) {
 
 fileToRead.addEventListener("change", handleFileUpload);
 reloadButton.addEventListener("click", reloadRom);
+// selectOption.addEventListener("change", getRom);
+
+// keypad.onmousemove = (event) => {
+//     image.style.left = event.clientX + 'px';
+//     image.style.top = event.clientY + 'px';
+// }
+// keypad.onmouseover = () => {
+//     image.style.visibility = "visible";
+// }
+// keypad.onmouseout = () => {
+//     image.style.visibility = "hidden";
+// }
 
 /**
  * Functions
@@ -33,9 +48,21 @@ function handleFileUpload() {
         romFileData = event.target.result;
         console.log(romFileData.byteLength);
         
-        loadRom(romFileData);
+        // loadRom(romFileData);
     };
 }
+
+// function getRom(event) {
+//     console.log(typeof(ibm));
+//     console.log(ibm);
+//     // console.log(event.target.value);
+
+//     let fileReader = new FileReader();
+//     fileReader.readAsArrayBuffer(ibm);
+//     fileReader.onloadend = (event) => {
+//         // console.log(event.target.result.byteLength);
+//     };
+// }
 
 function loadRom(rom) {
     window.cancelAnimationFrame(animate);
