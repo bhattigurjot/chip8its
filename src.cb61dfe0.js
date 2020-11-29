@@ -5,4 +5,4 @@ parcelRequire=function(e,r,t,n){var i,o="function"==typeof parcelRequire&&parcel
 },{"./io":"BHl8"}],"Focm":[function(require,module,exports) {
 "use strict";var e,t=n(require("./chippy8"));function n(e){return e&&e.__esModule?e:{default:e}}var o=void 0,r=60,a=document.getElementById("canvas"),l=document.getElementById("romFile"),d=document.getElementById("start");function u(){var e=document.getElementById("romFile").files[0],t=new FileReader;t.readAsArrayBuffer(e),t.onloadend=function(e){o=e.target.result,console.log(o.byteLength)}}function i(n){window.cancelAnimationFrame(m),(e=new t.default(a)).uploadRomToMemory(n),m()}function c(){o?i(o):alert("No rom uploaded!")}function m(){setTimeout(function(){requestAnimationFrame(m),e.emulatorLoop()},1e3/r)}a.getContext?(console.log("Welcome to Chip 8 Emulator"),e=new t.default(a)):console.log("Canvas not supported. Try different browser."),l.addEventListener("change",u),d.addEventListener("click",c);
 },{"./chippy8":"aWir"}]},{},["Focm"], null)
-//# sourceMappingURL=chip8its/src.cb61dfe0.js.map
+//# sourceMappingURL=src.cb61dfe0.js.map
