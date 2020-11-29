@@ -1,11 +1,37 @@
-.outer {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
+body {
+    background-color: black;
+}
+
+.container {
+    height: 95vh;
+    width: 95vw;
+    background-image: url("./bg2.png");
+    background-repeat: no-repeat;
+    background-size: 60vw 50vw;
+    background-color: black;
+    background-position: center;
+    filter: grayscale(100%);
 }
 
 .upload {
+    position: absolute;
+    width: 300px;
+    height: 100px;
+    top: calc(50% - 100px);
     background-color: aquamarine;
+    filter: grayscale(90%);
+
+    display: flex;
+    flex-direction: column;
+    flex-flow: column;
+    justify-content: center;
+    justify-items: center;
+    flex-wrap: wrap;
+}
+
+#canvas { 
+    position: absolute;
+    top:18%;
+    left:33%;
+    border: 10px dotted seagreen ;
 }
