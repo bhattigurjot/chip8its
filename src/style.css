@@ -2,6 +2,13 @@ body {
     background-color: black;
 }
 
+h1 {
+    position: absolute;
+    font-family: 'Press Start 2P', cursive;
+    color: aliceblue;
+    left: 44%;
+}
+
 .container {
     height: 95vh;
     width: 95vw;

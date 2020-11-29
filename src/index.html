@@ -3,15 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chippy 8 Emulator</title>
+    <title>Chip8its - Chip 8 Emulator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./style.css"></link>
 </head>
 <body>
     <div class="container">
+        <!-- <h1>CHIPPY-8</h1> -->
+        <h1>Chip8its</h1>
         <canvas id="canvas"></canvas>
         <!-- <div id="keypad"></div> -->
     </div>
     <div class="upload">
+        <span style="align-self: center;">Upload Rom and press Start button</span>
         <!-- <div>
             <label for="romsOptions">Choose Rom:</label>
             <select id="romsOptions">
@@ -22,6 +26,7 @@
         <input type="file" id="romFile"/>
         <button id="start">Start</button>
         <!-- <button id="reload">Reload</button> -->
+        <span style="align-self: center;">Controls</span>
         <img id="image" src="./keys.png"/>
     </div>
     <script src="./index.js"></script>
